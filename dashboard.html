@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TemiTunes</title>
+    <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore-compat.js"></script>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+     <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h2 class="logo">TemiTunes</h2>
+        </div>
+        <div class="nav-right">
+            <span class="user-name" id="username-display">Loading...</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-section="search">
+                    <span class="icon">🔍</span>
+                    <span>Search</span>
+                </li>
+                <li class="menu-item" data-section="playlists">
+                    <span class="icon">📋</span>
+                    <span>Your Playlists</span>
+                </li>
+                <li class="menu-item" data-section="favorites">
+                    <span class="icon">❤️</span>
+                    <span>Liked Songs</span>
+                </li>
+                <li class="menu-item" data-section="recent">
+                    <span class="icon">🕒</span>
+                    <span>Recently Played</span>
+                </li>
+                <li class="menu-item" data-section="library">
+                    <span class="icon">🎵</span>
+                    <span>Your Library</span>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Search Section -->
+            <section id="search-section" class="content-section active">
+                <h1>Search</h1>
+                <div class="search-container">
+                    <input type="text" id="search-input" class="search-input" placeholder="What do you want to listen to?">
+                    <button class="search-btn">Search</button>
+                </div>
+                <div id="search-results" class="songs-grid">
+                    <!-- Search results will appear here -->
+                    <p class="empty-state">Search for songs, artists, or albums</p>
+                </div>
+            </section>
+
+            <!-- Playlists Section -->
+            <section id="playlists-section" class="content-section">
+                <div class="section-header">
+                    <h1>Your Playlists</h1>
+                    <button class="create-playlist-btn">+ Create Playlist</button>
+                </div>
+                <div id="playlists-container" class="playlists-grid">
+                    <!-- Playlists will appear here -->
+                    <div class="empty-state">
+                        <p>You don't have any playlists yet</p>
+                        <p>Create your first playlist to get started!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Favorites Section -->
+            <section id="favorites-section" class="content-section">
+                <h1>Liked Songs</h1>
+                <div id="favorites-container" class="songs-list">
+                    <!-- Favorite songs will appear here -->
+                    <div class="empty-state">
+                        <p>No liked songs yet</p>
+                        <p>Songs you like will appear here</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recently Played Section -->
+            <section id="recent-section" class="content-section">
+                <h1>Recently Played</h1>
+                <div id="recent-container" class="songs-list">
+                    <!-- Recently played songs will appear here -->
+                    <div class="empty-state">
+                        <p>No recent activity</p>
+                        <p>Start playing music to see your history</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Your Library Section -->
+            <section id="library-section" class="content-section">
+                <h1>Your Library</h1>
+                <div id="library-container" class="songs-grid">
+                    <!-- All songs library -->
+                    <div class="song-card">
+                        <div class="song-cover">
+                            <img src="https://via.placeholder.com/150" alt="Song Cover">
+                            <button class="play-btn">▶</button>
+                        </div>
+                        <div class="song-info">
+                            <h3 class="song-title">Song Title</h3>
+                            <p class="song-artist">Artist Name</p>
+                        </div>
+                        <button class="like-btn">♡</button>
+                    </div>
+                    <!-- More songs... -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Music Player (Fixed at Bottom) -->
+    <div class="music-player">
+        <!-- Left: Current Song Info -->
+        <div class="player-left">
+            <div class="now-playing-cover">
+                <img id="player-cover" src="https://via.placeholder.com/60" alt="Album Cover">
+            </div>
+            <div class="now-playing-info">
+                <h4 id="player-title">Song Title</h4>
+                <p id="player-artist">Artist Name</p>
+            </div>
+            <button class="player-like-btn">♡</button>
+        </div>
+
+        <!-- Center: Player Controls -->
+        <div class="player-center">
+            <div class="player-controls">
+                <button class="control-btn" id="shuffle-btn">🔀</button>
+                <button class="control-btn" id="prev-btn">⏮</button>
+                <button class="control-btn play-pause" id="play-pause-btn">▶</button>
+                <button class="control-btn" id="next-btn">⏭</button>
+                <button class="control-btn" id="repeat-btn">🔁</button>
+            </div>
+            <div class="progress-container">
+                <span class="time-current" id="current-time">0:00</span>
+                <input type="range" class="progress-bar" id="progress-bar" min="0" max="100" value="0">
+                <span class="time-total" id="total-time">0:00</span>
+            </div>
+        </div>
+
+        <!-- Right: Volume Control -->
+        <div class="player-right">
+            <button class="control-btn" id="volume-btn">🔊</button>
+            <input type="range" class="volume-bar" id="volume-bar" min="0" max="100" value="50">
+        </div>
+
+        <!-- Hidden Audio Element -->
+        <audio id="audio-player"></audio>
+    </div>
+</body>
+</html>
+<script src="dashboard.js"></script>
