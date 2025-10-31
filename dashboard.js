@@ -23,10 +23,10 @@ auth.onAuthStateChanged((user) => {
         console.log(' User authenticated:', user.email);
         document.getElementById('username-display').textContent = user.email;
         
-        loadPlaylists();
-        loadFavorites();
-        loadRecentlyPlayed();
-        fetchSongs();
+        loadPlaylists()
+        loadFavorites()
+        loadRecentlyPlayed()
+        fetchSongs()
     } else {
         console.log('No user authenticated, redirecting...');
         window.location.href = 'index.html';
@@ -34,12 +34,15 @@ auth.onAuthStateChanged((user) => {
 });
 
 function logout() {
-    auth.signOut().then(() => {
-        window.location.href = 'index.html';
-    }).catch((error) => {
-        console.error('Logout error:', error);
-    });
+    if (confirm('Are you sure you want to log out?')) {
+        auth.signOut().then(() => {
+            window.location.href = 'index.html';
+        }).catch((error) => {
+            console.error('Logout error:', error);
+        });
+    }
 }
+
 
 
 const menuItems = document.querySelectorAll('.menu-item')
@@ -83,16 +86,18 @@ playPauseBtn.addEventListener('click', () => {
         audioPlayer.pause();
         playPauseBtn.textContent = '▶'
     }
-});
+})
 
 // Previous button
 prevBtn.addEventListener('click', () => {
     if (currentSongIndex > 0) {
-        currentSongIndex--;
-        loadSong(currentPlaylist[currentSongIndex]);
-        audioPlayer.play();
+        currentSongIndex--
+        loadSong(currentPlaylist[currentSongIndex])
+        audioPlayer.play()
     }
-});
+})
+
+
 
 // Next button
 nextBtn.addEventListener('click', () => {
@@ -190,14 +195,14 @@ async function fetchSongs() {
             const response = await fetch(url);
             const data = await response.json();
             
-            console.log(`✅ Fetched ${data.results.length} ${genre} songs`);
+            console.log(`Fetched ${data.results.length} ${genre} songs`);
             allSongs = [...allSongs, ...data.results];
         }
         
         // Shuffle the songs so they're mixed
         allSongs = shuffleArray(allSongs);
         
-        console.log(`🎵 Total songs loaded: ${allSongs.length}`);
+        console.log(`Total songs loaded: ${allSongs.length}`);
         displaySongs(allSongs);
         
     } catch (error) {
@@ -510,7 +515,6 @@ createPlaylistBtn.addEventListener('click', () => {
 });
 
 // Create playlist in Firebase
-// Create playlist in Firebase (FIXED VERSION)
 async function createPlaylist(name) {
     const user = auth.currentUser;
     
